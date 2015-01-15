@@ -1,4 +1,4 @@
-package com.sunnybat.update;
+package com.github.sunnybat.update;
 
 import java.io.*;
 import java.net.*;
