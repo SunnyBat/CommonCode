@@ -14,17 +14,17 @@ public class ErrorWindow extends javax.swing.JFrame {
   /**
    * Creates a new ErrorForm. Note that this does not
    */
-  public ErrorWindow() {
+  protected ErrorWindow() {
     this(null);
   }
 
-  public ErrorWindow(Throwable error) {
+  protected ErrorWindow(Throwable error) {
     myError = error;
     initComponents();
     JBError.setEnabled(myError != null);
   }
 
-  public void showWindow() {
+  protected void showWindow() {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

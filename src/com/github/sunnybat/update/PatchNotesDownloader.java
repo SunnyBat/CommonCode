@@ -11,18 +11,46 @@ import java.net.URLConnection;
  *
  * @author SunnyBat
  */
-public class PatchNotes {
+public class PatchNotesDownloader {
 
   private String versionNotes;
-  private int updateLevel = -1;
-  private final String PATCH_NOTES_LINK;
+  private int updateLevel = -2;
+  private final String PATCH_NOTES_LINK; // No need to give user this link, I don't think...
+  /**
+   * {@link #getUpdateLevel()} returns this if the Patch Notes have not been downloaded yet.
+   */
+  public static final int UPDATE_NOT_RUN = -2;
+  /**
+   * {@link #getUpdateLevel()} returns this if the program was unable to download the Patch Notes, but an attempt to was made.
+   */
+  public static final int UPDATE_ERROR = -1;
+  /**
+   * {@link #getUpdateLevel()} returns this if no update is available.
+   */
+  public static final int UPDATE_NONE = 0;
+  /**
+   * {@link #getUpdateLevel()} returns this if a BETA version is available.
+   */
+  public static final int UPDATE_BETA = 1;
+  /**
+   * {@link #getUpdateLevel()} returns this if a minor update is available.
+   */
+  public static final int UPDATE_MINOR = 2;
+  /**
+   * {@link #getUpdateLevel()} returns this if a major update is available.
+   */
+  public static final int UPDATE_MAJOR = 3;
+  /**
+   * {@link #getUpdateLevel()} returns this if the version supplied in {@link #downloadVersionNotes(java.lang.String)} was not found.
+   */
+  public static final int UPDATE_NOT_FOUND = 4;
 
   /**
    * Creates a new PatchNotes instance with the given path to the Patch Notes file.
    *
    * @param patchNotesLink The URL to the Patch Notes file
    */
-  public PatchNotes(String patchNotesLink) {
+  public PatchNotesDownloader(String patchNotesLink) {
     // Check to see if patchNotesLink starts with C:\ or a similar path and then append file:\\ if true?
     PATCH_NOTES_LINK = patchNotesLink;
   }
@@ -52,7 +80,7 @@ public class PatchNotes {
    * been loaded yet.
    *
    * @return The currently loaded version notes, or null if notes are not loaded yet.
-   * @see #loadVersionNotes(java.lang.String)
+   * @see #downloadVersionNotes(java.lang.String)
    */
   public String getVersionNotes() {
     return versionNotes;
@@ -61,13 +89,15 @@ public class PatchNotes {
   /**
    * Loads the current version notes from online. This retreives all of the version notes possible and stores them in one String, with each line
    * separated by a line break (\n). Note that this method blocks until finished, which depends on the user's internet speed. This also parses tokens
-   * from the version notes (and does not add them into the version notes String).
+   * from the version notes (and does not add them into the version notes String).<br>
+   * Note that if this method throws an IOException, a new PatchNotesDownloader object should be created to try again.
    *
    * @param currentVersion The current version of the program
    * @throws java.io.IOException If an error occurs while downloading the Patch Notes
    * @see #getVersionNotes()
    */
-  public void loadVersionNotes(String currentVersion) throws IOException {
+  public void downloadVersionNotes(String currentVersion) throws IOException {
+    setUpdateLevel(UPDATE_ERROR); // So if something goes wrong, it's at this error level
     URLConnection inputConnection;
     InputStream textInputStream;
     BufferedReader myReader;
@@ -82,7 +112,7 @@ public class PatchNotes {
     while ((line = myReader.readLine()) != null) {
       line = line.trim();
       if (line.contains("~~~" + currentVersion + "~~~")) {
-        setUpdateLevel(0);
+        setUpdateLevel(UPDATE_NONE);
         versionFound = true;
       }
       if (line.startsWith("TOKEN:")) {
@@ -92,16 +122,16 @@ public class PatchNotes {
             String load = d.substring(11);
             switch (load) {
               case "BETA":
-                setUpdateLevel(1);
+                setUpdateLevel(UPDATE_BETA);
                 break;
               case "UPDATE":
-                setUpdateLevel(2);
+                setUpdateLevel(UPDATE_MINOR);
                 break;
               case "MAJORUPDATE":
-                setUpdateLevel(3);
+                setUpdateLevel(UPDATE_MAJOR);
                 break;
-              case "INVALIDUPDATE":
-                setUpdateLevel(4);
+              case "INVALIDUPDATE": // Token should be at EOF for all PatchNotes
+                setUpdateLevel(UPDATE_NOT_FOUND);
                 break;
               default:
                 System.out.println("Unknown updateType token: " + load);
@@ -155,10 +185,10 @@ public class PatchNotes {
    * @return True if an update is available, false if not.
    */
   public boolean updateAvailable() {
-    if (getUpdateLevel() == -1) {
+    if (getUpdateLevel() == UPDATE_NOT_RUN) {
       throw new IllegalStateException("Patch Notes have not been loaded!");
     }
-    return !(getUpdateLevel() <= 0 || getUpdateLevel() >= 4);
+    return !(getUpdateLevel() <= UPDATE_NONE || getUpdateLevel() >= UPDATE_NOT_FOUND);
   }
 
 }

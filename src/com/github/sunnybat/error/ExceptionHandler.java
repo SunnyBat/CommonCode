@@ -1,13 +1,9 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.github.sunnybat.error;
 
 import java.awt.GraphicsEnvironment;
 
 /**
+ * An alternative ExceptionHandler that shows uncaught exceptions in an ErrorWindow.
  *
  * @author SunnyBat
  */
@@ -21,7 +17,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
   @Override
   public void uncaughtException(Thread aThread, Throwable aThrowable) {
-    ErrorDisplay.showErrorWindow("ERROR", "Uncaught Exception", "Uncaught exception in Thread: " + aThread.getName(), aThrowable);
+    ErrorDisplay.showErrorWindow("ERROR", "Uncaught Exception", "This is probably program-breaking. Restart recommended.\nUncaught exception in Thread: " + aThread.getName(), aThrowable);
   }
 
 }
