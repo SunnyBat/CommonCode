@@ -1,4 +1,4 @@
-package com.github.sunnybat.update;
+package com.github.sunnybat.commoncode.update;
 
 import java.io.*;
 import java.net.*;
@@ -39,6 +39,8 @@ public class UpdateDownloader {
 
   /**
    * Makes UpdateDownloader check for BETA versions.
+   *
+   * @throws IllegalStateException If BETA link has not been specified
    */
   public void setUseBeta() {
     if (BETA_UPDATE_LINK == null) {
@@ -48,25 +50,17 @@ public class UpdateDownloader {
   }
 
   /**
-   * Checks whether or not the program should use BETA versions.
+   * Returns the size of the update file found online.
    *
-   * @return True for use BETA, false for not
-   */
-  public boolean getUseBeta() {
-    return useBetaVersion;
-  }
-
-  /**
-   * Returns the size of the update file found online. This will return 0 if the size has not been loaded yet.
-   *
-   * @return The size of the update file found online, or 0 if the size has not been loaded yet
-   * @throws java.io.IOException If an error occurs while getting the update size
+   * @return The size of the update file found online
+   * @throws IOException If an error occurs while getting the update size
+   * @throws IllegalStateException If BETA version is enabled but BETA update link has not been specified
    */
   public long getUpdateSize() throws IOException {
     URL updateURL;
     if (useBetaVersion) {
       if (BETA_UPDATE_LINK == null) {
-        throw new IllegalArgumentException("BETA update link is null, but BETA versions are enabled!");
+        throw new IllegalStateException("BETA version is enabled, but BETA update link is null!");
       }
       updateURL = new URL(BETA_UPDATE_LINK);
     } else {
@@ -82,11 +76,11 @@ public class UpdateDownloader {
   }
 
   /**
-   * Downloads the latest JAR file from the given link. Note that this automatically closes the program once finished. Also note that if this
-   * overwrites the program's current jar file, you will have to restart the program (in a new JVM instance) to load any new classes.
+   * Downloads the latest JAR file from the given link. Note that if this overwrites the program's current jar file, you will have to restart the
+   * program (in a new JVM instance) to load any new classes.
    *
    * @param writeFile The File to write the update to
-   * @throws java.io.IOException If an error occurs while downloading or writing the file
+   * @throws IOException If an error occurs while downloading or writing the file
    */
   public void updateProgram(File writeFile) throws IOException {
     URL updateURL;
@@ -101,6 +95,9 @@ public class UpdateDownloader {
     System.out.println("Update Size(compressed): " + remoteFileSize + " Bytes");
     String path = writeFile.getAbsolutePath();
     File tempFile = new File(path.substring(0, path.lastIndexOf(".")) + ".temp");
+    if (tempFile.exists()) {
+      tempFile.delete();
+    }
     BufferedOutputStream buffOutputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
     byte[] buffer = new byte[1024];
     int bytesRead;
@@ -111,9 +108,26 @@ public class UpdateDownloader {
     buffOutputStream.flush();
     buffOutputStream.close();
     inputStream.close();
-    if (writeFile.exists()) {
-      writeFile.delete();
+    // Requires custom client code to overwrite currently open JAR file :(
+//    if (writeFile.exists()) {
+//      if (!writeFile.delete()) {
+//        System.out.println("Error deleting file.");
+//      }
+//    }
+//    if (!tempFile.renameTo(writeFile)) {
+//      System.out.println("Error renaming file.");
+//    }
+    // Instead we have to force an overwrite
+    InputStream fIn = new BufferedInputStream(new FileInputStream(tempFile));
+    File outputFile = new File(path);
+    buffOutputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+    buffer = new byte[1024];
+    while ((bytesRead = fIn.read(buffer)) != -1) {
+      buffOutputStream.write(buffer, 0, bytesRead);
     }
-    tempFile.renameTo(writeFile);
+    buffOutputStream.flush();
+    buffOutputStream.close();
+    fIn.close();
+    tempFile.delete();
   }
 }

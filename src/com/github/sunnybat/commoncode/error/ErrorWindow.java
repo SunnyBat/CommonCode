@@ -1,4 +1,4 @@
-package com.github.sunnybat.error;
+package com.github.sunnybat.commoncode.error;
 
 import java.awt.datatransfer.*;
 import java.awt.Toolkit;

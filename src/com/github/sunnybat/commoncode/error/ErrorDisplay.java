@@ -1,4 +1,4 @@
-package com.github.sunnybat.error;
+package com.github.sunnybat.commoncode.error;
 
 /**
  * A handler to show Error Windows when an error occurs. This should be the only place

@@ -1,4 +1,4 @@
-package com.github.sunnybat.update;
+package com.github.sunnybat.commoncode.update;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -153,14 +153,16 @@ public class PatchNotesDownloader {
 
   /**
    * Sets the level of the update. Note that this can only increase the level -- attempting to set the update level lower will have no effect.<br>
-   * Level 0 = Unknown (should be treated the same as Level 2 in program)<br>
+   * Level -1 = Error downloading Patch Notes
+   * Level 0 = None<br>
    * Level 1 = BETA<br>
    * Level 2 = Update<br>
    * Level 3 = Major Update
+   * Level 4 = Error finding version in Patch Notes
    *
    * @param level The level to set the update to
    */
-  public void setUpdateLevel(int level) {
+  private void setUpdateLevel(int level) {
     if (updateLevel < level) {
       updateLevel = level;
     }
@@ -183,6 +185,7 @@ public class PatchNotesDownloader {
    * Checks whether or not an update to the program is available. Note that you'll have to run {@link #getVersionNotes(java.lang.String)} first.
    *
    * @return True if an update is available, false if not.
+   * @throws IllegalStateException if Patch Notes have not been loaded yet
    */
   public boolean updateAvailable() {
     if (getUpdateLevel() == UPDATE_NOT_RUN) {
