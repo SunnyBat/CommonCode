@@ -7,6 +7,7 @@ package com.github.sunnybat.commoncode.error;
  */
 public class ErrorDisplay {
 
+  private static boolean isFatalError;
   private static byte errorWindowCount = 0;
   public static final int MAX_ERROR_WINDOWS = 10;
 
@@ -15,10 +16,9 @@ public class ErrorDisplay {
    * function, not for notifications to the user.
    *
    * @param message The error message to display to the user
-   * @return The new ErrorWindow that is created
    */
-  public static ErrorWindow showErrorWindow(String message) {
-    return showErrorWindow("Error", "ERROR", message, null);
+  public static void showErrorWindow(String message) {
+    showErrorWindow("Error", "ERROR", message, null);
   }
 
   /**
@@ -27,10 +27,9 @@ public class ErrorDisplay {
    *
    * @param message The error message to display to the user
    * @param t The error to display
-   * @return The new ErrorWindow that is created
    */
-  public static ErrorWindow showErrorWindow(String message, Throwable t) {
-    return showErrorWindow("Error", "ERROR", message, t);
+  public static void showErrorWindow(String message, Throwable t) {
+    showErrorWindow("Error", "ERROR", message, t);
   }
 
   /**
@@ -40,10 +39,9 @@ public class ErrorDisplay {
    * @param title The title of the error message
    * @param message The error message to display to the user
    * @param t The error to display
-   * @return The new ErrorWindow that is created
    */
-  public static ErrorWindow showErrorWindow(String title, String message, Throwable t) {
-    return showErrorWindow("Error", title, message, t);
+  public static void showErrorWindow(String title, String message, Throwable t) {
+    showErrorWindow("Error", title, message, t);
   }
 
   /**
@@ -54,14 +52,14 @@ public class ErrorDisplay {
    * @param title The title of the error message
    * @param message The error message to display to the user
    * @param t The error to display
-   * @return The new ErrorWindow that is created
    */
-  public static ErrorWindow showErrorWindow(String windowTitle, String title, String message, Throwable t) {
+  public static void showErrorWindow(String windowTitle, String title, String message, Throwable t) {
     if (errorWindowCount > MAX_ERROR_WINDOWS) {
       System.out.println("Stopped showing error windows -- too many!");
-      return null;
+      return;
     }
-    return createErrorWindow(t, windowTitle, title, message);
+    ErrorWindow errorWindow = createErrorWindow(t, windowTitle, title, message);
+    errorWindow.showWindow();
   }
 
   /**
@@ -69,9 +67,8 @@ public class ErrorDisplay {
    * open {@link Error}.
    *
    * @param t The error object
-   * @return The new ErrorWindow that is created
    */
-  public static ErrorWindow detailedReport(Throwable t) {
+  protected static void detailedReport(Throwable t) {
     // Create StackTrace information for GUI
     StringBuilder message = new StringBuilder(t.toString() + "\n");
     for (StackTraceElement eE1 : t.getStackTrace()) {
@@ -79,20 +76,26 @@ public class ErrorDisplay {
       message.append(eE1);
       message.append("\n");
     }
-    ErrorWindow errorWindow = createErrorWindow(t, "Error Information", "StackTrace Information:", message.toString());
+    ErrorWindow errorWindow = createErrorWindow(null, "Error Information", "StackTrace Information:", message.toString());
     errorWindow.setLineWrap(false);
     errorWindow.setExtraButtonText("Copy to Clipboard");
     errorWindow.setExtraButtonEnabled(true);
-    t.printStackTrace();
-    return errorWindow;
+    errorWindow.showWindow();
   }
 
+  /**
+   * Creates a new ErrorWindow. Note that this does not automatically display the ErrorWindow.
+   * @param t
+   * @param title
+   * @param error
+   * @param message
+   * @return
+   */
   private static ErrorWindow createErrorWindow(Throwable t, String title, String error, String message) {
-    ErrorWindow errorWindow = new ErrorWindow();
+    ErrorWindow errorWindow = new ErrorWindow(t);
     errorWindow.setTitleText(title);
     errorWindow.setErrorText(error);
     errorWindow.setInformationText(message);
-    errorWindow.showWindow();
     errorWindowCount++;
     return errorWindow;
   }
@@ -102,6 +105,10 @@ public class ErrorDisplay {
    */
   protected static void errWindowClosed() {
     errorWindowCount--;
+    if (isFatalError && areAllClosed()) {
+      System.out.println("ErrorDisplay: All error windows closed, exiting program.");
+      System.exit(1);
+    }
   }
 
   /**
@@ -111,5 +118,13 @@ public class ErrorDisplay {
    */
   public static boolean areAllClosed() {
     return errorWindowCount == 0;
+  }
+
+  /**
+   * Sets the Fatal Error flag to true. Once called, the program will be killed once all error windows are closed. Note that this will not have any
+   * effect if no Error Windows are subsequently displayed.
+   */
+  public static void fatalError() {
+    isFatalError = true;
   }
 }

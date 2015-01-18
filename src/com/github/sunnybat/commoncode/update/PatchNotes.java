@@ -11,14 +11,24 @@ public class PatchNotes extends javax.swing.JFrame {
   private final String versionNotes;
 
   /**
-   * Creates new form patchNotes.
+   * Creates new form PatchNotes.
    *
-   * @param uF The UpdatePrompt object that this patchNotes is attached to
    * @param version The version of the program
    * @param versionNotes The Version Notes to display
    */
-  protected PatchNotes(UpdatePrompt uF, String version, String versionNotes) {
-    updateFrom = uF;
+  public PatchNotes(String version, String versionNotes) {
+    this(null, version, versionNotes);
+  }
+
+  /**
+   * Creates new form patchNotes.
+   *
+   * @param updatePrompt The UpdatePrompt object that this patchNotes is attached to
+   * @param version The version of the program
+   * @param versionNotes The Version Notes to display
+   */
+  protected PatchNotes(UpdatePrompt updatePrompt, String version, String versionNotes) {
+    updateFrom = updatePrompt;
     this.version = version;
     this.versionNotes = versionNotes;
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
@@ -39,9 +49,14 @@ public class PatchNotes extends javax.swing.JFrame {
     } else {
       jTextArea1.setText(versionNotes);
     }
-    setTitle("Patch Notes for Version " + version);
+    JLTitle.setText("v" + version + " Patch Notes");
   }
 
+  /**
+   * Sets the Window Title. This is the title used by the Operating System in the taskbar.
+   *
+   * @param title The title to use
+   */
   public void setWindowTitle(final String title) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -51,6 +66,11 @@ public class PatchNotes extends javax.swing.JFrame {
     });
   }
 
+  /**
+   * Sets the main JTextArea text. Generally this is where the Patch Notes go.
+   *
+   * @param text The text to set the main JTextArea to
+   */
   public void setMainText(final String text) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -76,7 +96,7 @@ public class PatchNotes extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jLabel1 = new javax.swing.JLabel();
+    JLTitle = new javax.swing.JLabel();
     jScrollPane1 = new javax.swing.JScrollPane();
     jTextArea1 = new javax.swing.JTextArea();
     jButton1 = new javax.swing.JButton();
@@ -85,9 +105,9 @@ public class PatchNotes extends javax.swing.JFrame {
     setTitle("Patch Notes");
     setMinimumSize(this.getPreferredSize());
 
-    jLabel1.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
-    jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    jLabel1.setText("Recent Patch Notes");
+    JLTitle.setFont(new java.awt.Font("Tahoma", 0, 36)); // NOI18N
+    JLTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+    JLTitle.setText("Recent Patch Notes");
 
     jTextArea1.setEditable(false);
     jTextArea1.setColumns(20);
@@ -112,7 +132,7 @@ public class PatchNotes extends javax.swing.JFrame {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING)
-          .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
+          .addComponent(JLTitle, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
           .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
@@ -120,7 +140,7 @@ public class PatchNotes extends javax.swing.JFrame {
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jLabel1)
+        .addComponent(JLTitle)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -135,8 +155,8 @@ public class PatchNotes extends javax.swing.JFrame {
     dispose();
   }//GEN-LAST:event_jButton1ActionPerformed
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JLabel JLTitle;
   private javax.swing.JButton jButton1;
-  private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTextArea jTextArea1;
   // End of variables declaration//GEN-END:variables

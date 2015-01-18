@@ -17,7 +17,8 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
   @Override
   public void uncaughtException(Thread aThread, Throwable aThrowable) {
-    ErrorDisplay.showErrorWindow("ERROR", "Uncaught Exception", "This is probably program-breaking. Restart recommended.\nUncaught exception in Thread: " + aThread.getName(), aThrowable);
+    ErrorDisplay.fatalError();
+    ErrorDisplay.showErrorWindow("ERROR", "Uncaught Exception", "An uncaught exception has occurred in the program. Once all Error windows are closed, the program will exit.\nUncaught exception in Thread: " + aThread.getName(), aThrowable);
   }
 
 }

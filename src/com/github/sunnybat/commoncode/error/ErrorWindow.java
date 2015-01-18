@@ -4,27 +4,28 @@ import java.awt.datatransfer.*;
 import java.awt.Toolkit;
 
 /**
+ * For ErrorDisplay use only. Creates a new ErrorWindow to signify an error has occurred within the program.
  *
  * @author SunnyBat
  */
-public class ErrorWindow extends javax.swing.JFrame {
+class ErrorWindow extends javax.swing.JFrame {
 
   private final Throwable myError;
 
   /**
    * Creates a new ErrorForm. Note that this does not
    */
-  protected ErrorWindow() {
+  public ErrorWindow() {
     this(null);
   }
 
-  protected ErrorWindow(Throwable error) {
+  public ErrorWindow(Throwable error) {
     myError = error;
     initComponents();
     JBError.setEnabled(myError != null);
   }
 
-  protected void showWindow() {
+  public void showWindow() {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {

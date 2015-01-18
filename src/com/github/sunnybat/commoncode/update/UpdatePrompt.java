@@ -11,30 +11,46 @@ public class UpdatePrompt extends javax.swing.JFrame {
 
   private final CountDownLatch countdown = new CountDownLatch(1);
   private boolean updateProgram;
-  private final double updateSize;
-  private final int updateLevel;
+  private final PatchNotes patchNotesWindow;
 
   /**
-   * Creates a new Update form. Note that the size and update level are set to unknown.
+   * Creates a new Update form. Note that the size and update level are set to unknown, and the Patch Notes button will be unavailable.
    */
   public UpdatePrompt() {
-    this(-1, -2);
+    this(-1, -2, null, null);
   }
 
   /**
-   * Creates a new Update form.
+   * Creates a new Update form. Note that the Patch Notes button will be unavailable.
    *
    * @param updateSize The update size to display (in bytes)
    * @param updateLevel The update level to display (see PatchNotesDownloader constants)
    */
   public UpdatePrompt(double updateSize, int updateLevel) {
-    this.updateSize = updateSize;
-    this.updateLevel = updateLevel;
+    this(updateSize, updateLevel, null, null);
+  }
+
+  /**
+   * Creates a new Update form.
+   *
+   * @param version The current version of the program
+   * @param versionNotes The Version Notes to display in the Patch Notes window
+   */
+  public UpdatePrompt(String version, String versionNotes) {
+    this(-1, -2, version, versionNotes);
+  }
+
+  public UpdatePrompt(final double updateSize, final int updateLevel, String version, String versionNotes) {
+    if (versionNotes == null) {
+      patchNotesWindow = null;
+    } else {
+      patchNotesWindow = new PatchNotes(this, version, versionNotes);
+    }
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         initComponents();
-        customComponents();
+        customComponents(updateSize, updateLevel);
       }
     });
   }
@@ -42,7 +58,10 @@ public class UpdatePrompt extends javax.swing.JFrame {
   /**
    * Sets up GUI
    */
-  private void customComponents() {
+  private void customComponents(double updateSize, int updateLevel) {
+    if (patchNotesWindow == null) {
+      JBPatchNotes.setVisible(false);
+    }
     JPBProgressBar.setVisible(false);
     pack();
     setLocationRelativeTo(null);
@@ -153,8 +172,11 @@ public class UpdatePrompt extends javax.swing.JFrame {
   }
 
   @Override
-  public void dispose() {
+  public final void dispose() {
     countdown.countDown();
+    if (patchNotesWindow != null) {
+      patchNotesWindow.dispose();
+    }
     super.dispose();
   }
 
@@ -195,8 +217,8 @@ public class UpdatePrompt extends javax.swing.JFrame {
    * Note that this runs on the EDT.
    */
   public void showPatchNotes() {
-    System.out.println("Patch Notes not overridden!");
     JBPatchNotes.setEnabled(false);
+    patchNotesWindow.setVisible(true);
   }
 
   /**
