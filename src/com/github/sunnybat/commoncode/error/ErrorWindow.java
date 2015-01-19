@@ -25,6 +25,9 @@ class ErrorWindow extends javax.swing.JFrame {
     JBError.setEnabled(myError != null);
   }
 
+  /**
+   * Makes the window visible as soon as possible.
+   */
   public void showWindow() {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -34,15 +37,25 @@ class ErrorWindow extends javax.swing.JFrame {
     });
   }
 
-  public void setTitleText(final String text) {
+  /**
+   * Sets the Window Title. This is the title used by the Operating System in the taskbar.
+   *
+   * @param title The title to use
+   */
+  public void setWindowTitle(final String title) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
-        setTitle(text);
+        setTitle(title);
       }
     });
   }
 
+  /**
+   * Sets the main error text.
+   *
+   * @param text The text to set
+   */
   public void setErrorText(final String text) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -52,6 +65,11 @@ class ErrorWindow extends javax.swing.JFrame {
     });
   }
 
+  /**
+   * Sets the main error information text. Newlines should be separated with \n.
+   *
+   * @param text The error information to set
+   */
   public void setInformationText(final String text) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -62,6 +80,11 @@ class ErrorWindow extends javax.swing.JFrame {
     });
   }
 
+  /**
+   * Sets the text of the Extra button. Button is located in the bottom right-hand corner of the window.
+   *
+   * @param text The text to set
+   */
   public void setExtraButtonText(final String text) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -71,6 +94,11 @@ class ErrorWindow extends javax.swing.JFrame {
     });
   }
 
+  /**
+   * Sets the Extra button state to enabled or disabled. Button is located in the bottom right-hand corner of the window.
+   *
+   * @param enabled True to enable, false to disable
+   */
   public void setExtraButtonEnabled(final boolean enabled) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
@@ -80,6 +108,11 @@ class ErrorWindow extends javax.swing.JFrame {
     });
   }
 
+  /**
+   * Sets whether or not to line wrap the information text.
+   *
+   * @param lineWrap True to line wrap, false to not
+   */
   public void setLineWrap(final boolean lineWrap) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override

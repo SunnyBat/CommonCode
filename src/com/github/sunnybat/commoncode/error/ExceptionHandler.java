@@ -9,6 +9,10 @@ import java.awt.GraphicsEnvironment;
  */
 public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
+  /**
+   * Creates a new ExceptionHandler instance that creates an ErrorWindow instead of printing to system.err. Note that this CANNOT run in headless
+   * environments.
+   */
   public ExceptionHandler() {
     if (GraphicsEnvironment.isHeadless()) {
       throw new IllegalStateException("Program is in headless mode.");

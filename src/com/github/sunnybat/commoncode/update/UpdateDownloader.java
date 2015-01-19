@@ -83,6 +83,22 @@ public class UpdateDownloader {
    * @throws IOException If an error occurs while downloading or writing the file
    */
   public void updateProgram(File writeFile) throws IOException {
+    updateProgram(null, writeFile);
+  }
+
+  /**
+   * Downloads the latest JAR file from the given link. Note that if this overwrites the program's current jar file, you will have to restart the
+   * program (in a new JVM instance) to load any new classes.
+   *
+   * @param update The UpdatePrompt to update as the update is downloaded, or null if none
+   * @param writeFile The File to write the update to
+   * @throws IOException If an error occurs while downloading or writing the file
+   */
+  public void updateProgram(UpdatePrompt update, File writeFile) throws IOException {
+    if (update != null) {
+      update.setStatusLabelText("Preparing to update program...");
+    }
+    System.out.println("Preparing to update program...");
     URL updateURL;
     if (useBetaVersion) {
       updateURL = new URL(BETA_UPDATE_LINK);
@@ -102,12 +118,23 @@ public class UpdateDownloader {
     byte[] buffer = new byte[1024];
     int bytesRead;
     System.out.println("Downloading update...");
+    int total = 0;
     while ((bytesRead = inputStream.read(buffer)) != -1) {
       buffOutputStream.write(buffer, 0, bytesRead);
+      total += bytesRead;
+      if (update != null) {
+        int percent = (int) (total * 100 / remoteFileSize);
+        update.setStatusLabelText("Percent complete: " + percent);
+        update.updateProgress(percent);
+      }
     }
     buffOutputStream.flush();
     buffOutputStream.close();
     inputStream.close();
+    if (update != null) {
+      update.setStatusLabelText("Saving update to file...");
+    }
+    System.out.println("Saving update to file...");
     // Requires custom client code to overwrite currently open JAR file :(
 //    if (writeFile.exists()) {
 //      if (!writeFile.delete()) {
@@ -129,5 +156,8 @@ public class UpdateDownloader {
     buffOutputStream.close();
     fIn.close();
     tempFile.delete();
+    if (update != null) {
+      update.setStatusLabelText("Finished updating!");
+    }
   }
 }

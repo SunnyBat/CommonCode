@@ -49,7 +49,9 @@ public class PatchNotes extends javax.swing.JFrame {
     } else {
       jTextArea1.setText(versionNotes);
     }
-    JLTitle.setText("v" + version + " Patch Notes");
+    if (version != null) {
+      JLTitle.setText("v" + version + " Patch Notes");
+    }
   }
 
   /**

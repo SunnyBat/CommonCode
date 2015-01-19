@@ -40,6 +40,14 @@ public class UpdatePrompt extends javax.swing.JFrame {
     this(-1, -2, version, versionNotes);
   }
 
+  /**
+   * Creates a new Update form.
+   *
+   * @param updateSize The update size to display (in bytes)
+   * @param updateLevel The update level to display (see PatchNotesDownloader constants)
+   * @param version The current version of the program
+   * @param versionNotes The Version Notes to display in the Patch Notes window
+   */
   public UpdatePrompt(final double updateSize, final int updateLevel, String version, String versionNotes) {
     if (versionNotes == null) {
       patchNotesWindow = null;
