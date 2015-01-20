@@ -17,7 +17,11 @@ public class UpdatePrompt extends javax.swing.JFrame {
    * Creates a new Update form. Note that the size and update level are set to unknown, and the Patch Notes button will be unavailable.
    */
   public UpdatePrompt() {
-    this(-1, -2, null, null);
+    this(null, -1, -2, null, null);
+  }
+
+  public UpdatePrompt(String programName) {
+    this(programName, -1, -2, null, null);
   }
 
   /**
@@ -27,7 +31,7 @@ public class UpdatePrompt extends javax.swing.JFrame {
    * @param updateLevel The update level to display (see PatchNotesDownloader constants)
    */
   public UpdatePrompt(double updateSize, int updateLevel) {
-    this(updateSize, updateLevel, null, null);
+    this(null, updateSize, updateLevel, null, null);
   }
 
   /**
@@ -37,7 +41,7 @@ public class UpdatePrompt extends javax.swing.JFrame {
    * @param versionNotes The Version Notes to display in the Patch Notes window
    */
   public UpdatePrompt(String version, String versionNotes) {
-    this(-1, -2, version, versionNotes);
+    this(null, -1, -2, version, versionNotes);
   }
 
   /**
@@ -49,6 +53,10 @@ public class UpdatePrompt extends javax.swing.JFrame {
    * @param versionNotes The Version Notes to display in the Patch Notes window
    */
   public UpdatePrompt(final double updateSize, final int updateLevel, String version, String versionNotes) {
+    this(null, updateSize, updateLevel, version, versionNotes);
+  }
+
+  public UpdatePrompt(final String programName, final double updateSize, final int updateLevel, String version, String versionNotes) {
     if (versionNotes == null) {
       patchNotesWindow = null;
     } else {
@@ -58,7 +66,7 @@ public class UpdatePrompt extends javax.swing.JFrame {
       @Override
       public void run() {
         initComponents();
-        customComponents(updateSize, updateLevel);
+        customComponents(programName, updateSize, updateLevel);
       }
     });
   }
@@ -66,9 +74,12 @@ public class UpdatePrompt extends javax.swing.JFrame {
   /**
    * Sets up GUI
    */
-  private void customComponents(double updateSize, int updateLevel) {
+  private void customComponents(String programName, double updateSize, int updateLevel) {
     if (patchNotesWindow == null) {
       JBPatchNotes.setVisible(false);
+    }
+    if (programName != null) {
+      JLTitle.setText(programName + " Update Found!");
     }
     JPBProgressBar.setVisible(false);
     pack();
@@ -237,7 +248,7 @@ public class UpdatePrompt extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jLabel1 = new javax.swing.JLabel();
+    JLTitle = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     JBYes = new javax.swing.JButton();
     JBNo = new javax.swing.JButton();
@@ -250,9 +261,9 @@ public class UpdatePrompt extends javax.swing.JFrame {
     setAlwaysOnTop(true);
     setResizable(false);
 
-    jLabel1.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
-    jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-    jLabel1.setText("Program Update Found!");
+    JLTitle.setFont(new java.awt.Font("Tahoma", 0, 24)); // NOI18N
+    JLTitle.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+    JLTitle.setText("Program Update Found!");
 
     jLabel2.setFont(new java.awt.Font("Tahoma", 2, 11)); // NOI18N
     jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -293,7 +304,7 @@ public class UpdatePrompt extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(JBPatchNotes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(JLStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
+          .addComponent(JLTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
           .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(JBYes, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -306,7 +317,7 @@ public class UpdatePrompt extends javax.swing.JFrame {
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jLabel1)
+        .addComponent(JLTitle)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(jLabel2)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -350,8 +361,8 @@ public class UpdatePrompt extends javax.swing.JFrame {
   private javax.swing.JButton JBPatchNotes;
   private javax.swing.JButton JBYes;
   private javax.swing.JLabel JLStatus;
+  private javax.swing.JLabel JLTitle;
   private javax.swing.JProgressBar JPBProgressBar;
-  private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   // End of variables declaration//GEN-END:variables
 }

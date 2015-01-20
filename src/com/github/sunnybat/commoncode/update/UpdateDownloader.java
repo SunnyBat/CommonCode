@@ -72,6 +72,7 @@ public class UpdateDownloader {
     if (updateSize == -1) {
       System.out.println("ERROR checking for updates: Update size listed as -1, program most likely unable to connect!");
     }
+    conn.getInputStream().close();
     return updateSize;
   }
 
