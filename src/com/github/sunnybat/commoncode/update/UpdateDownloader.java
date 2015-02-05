@@ -123,11 +123,12 @@ public class UpdateDownloader {
     while ((bytesRead = inputStream.read(buffer)) != -1) {
       buffOutputStream.write(buffer, 0, bytesRead);
       total += bytesRead;
+      int percent = (int) (total * 100 / remoteFileSize);
       if (update != null) {
-        int percent = (int) (total * 100 / remoteFileSize);
         update.setStatusLabelText("Percent complete: " + percent);
         update.updateProgress(percent);
       }
+      percentComplete(percent);
     }
     buffOutputStream.flush();
     buffOutputStream.close();
@@ -160,5 +161,13 @@ public class UpdateDownloader {
     if (update != null) {
       update.setStatusLabelText("Finished updating!");
     }
+  }
+
+  /**
+   * Called periodically while downloading a program update. Override to perform your own updates.
+   *
+   * @param percent The percent complete
+   */
+  public void percentComplete(int percent) {
   }
 }

@@ -88,7 +88,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="JBYes">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Yes! (Recommended)"/>
+        <Property name="text" type="java.lang.String" value="Yes! (Unknown)"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="JBYesActionPerformed"/>

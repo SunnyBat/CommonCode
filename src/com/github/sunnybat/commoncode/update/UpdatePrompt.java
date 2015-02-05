@@ -269,7 +269,7 @@ public class UpdatePrompt extends javax.swing.JFrame {
     jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     jLabel2.setText("Would you like to update to the most recent version?");
 
-    JBYes.setText("Yes! (Recommended)");
+    JBYes.setText("Yes! (Unknown)");
     JBYes.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         JBYesActionPerformed(evt);

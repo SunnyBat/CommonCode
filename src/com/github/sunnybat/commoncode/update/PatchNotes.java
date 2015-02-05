@@ -82,6 +82,9 @@ public class PatchNotes extends javax.swing.JFrame {
     });
   }
 
+  /**
+   * Called when the window is closed. Also enables the Patch Notes button in the given UpdatePrompt, if any.
+   */
   @Override
   public void dispose() {
     if (updateFrom != null) {

@@ -63,10 +63,10 @@ public class PatchNotesDownloader {
    * @return The version notes after the given version, or null if notes have not been retrieved yet
    */
   public String getVersionNotes(String version) {
-    String versNotes = getVersionNotes();
-    if (versNotes == null) {
+    if (versionNotes == null) {
       return null;
     }
+    String versNotes = versionNotes;
     try {
       versNotes = versNotes.substring(0, versNotes.indexOf("~~~" + version + "~~~")).trim();
     } catch (IndexOutOfBoundsException e) {
@@ -153,11 +153,11 @@ public class PatchNotesDownloader {
 
   /**
    * Sets the level of the update. Note that this can only increase the level -- attempting to set the update level lower will have no effect.<br>
-   * Level -1 = Error downloading Patch Notes
+   * Level -1 = Error downloading Patch Notes<br>
    * Level 0 = None<br>
    * Level 1 = BETA<br>
    * Level 2 = Update<br>
-   * Level 3 = Major Update
+   * Level 3 = Major Update<br>
    * Level 4 = Error finding version in Patch Notes
    *
    * @param level The level to set the update to
@@ -192,6 +192,15 @@ public class PatchNotesDownloader {
       throw new IllegalStateException("Patch Notes have not been loaded!");
     }
     return !(getUpdateLevel() <= UPDATE_NONE || getUpdateLevel() >= UPDATE_NOT_FOUND);
+  }
+
+  /**
+   * Checks whether or not the Version Notes have been loaded.
+   *
+   * @return True if they are loaded, false if not
+   */
+  public boolean areNotesLoaded() {
+    return versionNotes != null;
   }
 
 }
