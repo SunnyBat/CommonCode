@@ -16,6 +16,11 @@ public class Preference {
   private Object value;
   private boolean shouldSave;
 
+  /**
+   * Gets the name of this preference.
+   *
+   * @return The name of this preference.
+   */
   public String getPrefName() {
     return name;
   }
@@ -59,7 +64,6 @@ public class Preference {
       System.out.println("NOTE: Object val set to null!");
     }
     value = val;
-    System.out.println(name + " -- Value = " + value);
   }
 
   @Override

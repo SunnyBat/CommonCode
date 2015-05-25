@@ -39,7 +39,6 @@ public class Encryption {
     SecretKey key = keyFactory.generateSecret(new PBEKeySpec(System.getProperty("java.version").toCharArray()));
     Cipher pbeCipher = Cipher.getInstance("PBEWithMD5AndDES");
     pbeCipher.init(Cipher.ENCRYPT_MODE, key, new PBEParameterSpec(SALT, 20));
-    System.out.println(property + " ::: " + base64Encode(property.getBytes()));
     return base64Encode(pbeCipher.doFinal(property.getBytes("UTF-8")));
   }
 

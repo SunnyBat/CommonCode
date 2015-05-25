@@ -75,6 +75,18 @@ public class ErrorBuilder {
   private ErrorBuilder setButtonText(String text) { // Change to public later
     buttonText = text;
     throw new UnsupportedOperationException("Button text currently unimplemented.");
+    //return this;
+  }
+
+  /**
+   * Sets the error associated with this error window. This will enable the "More Information" button by default.
+   *
+   * @param error The error to associate
+   * @return The modified ErrorBuilder object
+   */
+  public ErrorBuilder setError(Throwable error) {
+    this.error = error;
+    return this;
   }
 
   /**
