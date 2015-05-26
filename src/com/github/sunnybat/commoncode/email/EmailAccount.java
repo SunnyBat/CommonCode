@@ -1,6 +1,6 @@
 package com.github.sunnybat.commoncode.email;
 
-import com.github.sunnybat.commoncode.error.ErrorDisplay;
+import com.github.sunnybat.commoncode.error.ErrorBuilder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -131,6 +131,8 @@ public class EmailAccount {
    * </tr>
    * </table>
    *
+   * For a full list of properties you can use, see <a href="https://www.google.com">here</a>.
+   *
    * @param key The property key
    * @param value The property value
    */
@@ -199,16 +201,32 @@ public class EmailAccount {
     } catch (Exception e) {
       e.printStackTrace();
       if (e instanceof AuthenticationFailedException) { // Subclass of MessagingException, so it should go before it
-        ErrorDisplay.showErrorWindow("Login Error", "Unable to log in. Double-check your username and password."
+        new ErrorBuilder()
+            .setError(e)
+            .setErrorTitle("Login Error")
+            .setErrorMessage("Unable to log in. Double-check your username and password."
             + "\nIf using Gmail, make sure you allow access to less secure apps:\nhttps://www.google.com/settings/security/lesssecureapps"
-            + "\nYou might also try unlocking a captcha:\nhttp://www.google.com/accounts/DisplayUnlockCaptcha", e);
+            + "\nYou might also try unlocking a captcha:\nhttp://www.google.com/accounts/DisplayUnlockCaptcha")
+            .buildWindow();
       } else if (e instanceof MessagingException) {
-        ErrorDisplay.showErrorWindow("Connection Error", "Unable to connect to email server.", e);
+        new ErrorBuilder()
+            .setError(e)
+            .setErrorTitle("Connection Error")
+            .setErrorMessage("Unable to connect to email server.")
+            .buildWindow();
         //} else if (mex.getLocalizedMessage().contains("javax.mail.AuthenticationFailedException:")) {
       } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
-        ErrorDisplay.showErrorWindow("SSL Certificate Error", "The PAXChecker was unable to connect to the mail server due to an invalid SSL certificate.", e);
+        new ErrorBuilder()
+            .setError(e)
+            .setErrorTitle("SSL Certificate Error")
+            .setErrorMessage("The PAXChecker was unable to connect to the mail server due to an invalid SSL certificate.")
+            .buildWindow();
       } else {
-        ErrorDisplay.showErrorWindow("ERROR", "An unknown error has occurred while attempting to send the message.", e);
+        new ErrorBuilder()
+            .setError(e)
+            .setErrorTitle("Mail Error")
+            .setErrorMessage("An unknown error has occurred while attempting to send the message.")
+            .buildWindow();
         return false;
       }
     }//end catch block

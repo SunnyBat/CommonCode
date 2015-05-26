@@ -1,7 +1,8 @@
 package com.github.sunnybat.commoncode.error;
 
-import java.awt.datatransfer.*;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 
 /**
  * For ErrorDisplay use only. Creates a new ErrorWindow to signify an error has occurred within the program.

@@ -7,17 +7,21 @@ package com.github.sunnybat.commoncode.error;
  */
 public class ErrorBuilder {
 
-  private String windowTitle = "ERROR";
-  private String errorTitle = "ERROR";
+  private String windowTitle = "Error Information";
+  private String errorTitle = "An error has occurred";
   private String errorMessage = ""; // So appendToErrorMessage doesn't throw NPE
-  private String buttonText;
+  private String buttonText = "Error Information";
   private Throwable error;
+  private boolean fatalError;
   private boolean built;
 
   /**
    * Creates a new ErrorBuilder.
    */
   public ErrorBuilder() {
+//    if (java.awt.GraphicsEnvironment.isHeadless()) {
+//      throw new IllegalStateException("Program is in headless mode.");
+//    } // Should instead just display on command-line?
   }
 
   /**
@@ -74,8 +78,7 @@ public class ErrorBuilder {
    */
   private ErrorBuilder setButtonText(String text) { // Change to public later
     buttonText = text;
-    throw new UnsupportedOperationException("Button text currently unimplemented.");
-    //return this;
+    return this;
   }
 
   /**
@@ -90,6 +93,17 @@ public class ErrorBuilder {
   }
 
   /**
+   * Sets the Fatal Error flag to true. Only goes into effect when this Error Window is built. When enabled, the program will be killed once all error
+   * windows are closed.
+   *
+   * @return The modified ErrorBuilder object
+   */
+  public ErrorBuilder fatalError() {
+    fatalError = true;
+    return this;
+  }
+
+  /**
    * Creates the Error Window and shows it.
    *
    * @throws IllegalStateException If the Error Window has already been built
@@ -98,7 +112,10 @@ public class ErrorBuilder {
     if (built) {
       throw new IllegalStateException("Error window has already been built.");
     }
-    ErrorDisplay.showErrorWindow(windowTitle, errorTitle, errorMessage, error);
+    if (fatalError) {
+      ErrorDisplay.fatalError();
+    }
+    ErrorDisplay.showErrorWindow(windowTitle, errorTitle, errorMessage, buttonText, error);
     built = true;
   }
 

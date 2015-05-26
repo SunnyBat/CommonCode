@@ -81,7 +81,7 @@ public class PreferenceHandler {
    * @param prefName The Preference name to check for
    * @return True if found, false if not
    */
-  protected synchronized boolean isInPrefs(String prefName) {
+  public synchronized boolean isInPrefs(String prefName) {
     try {
       String prefT = prefName;
       String[] keys = myPrefs.keys();
@@ -127,7 +127,11 @@ public class PreferenceHandler {
       }
       myPrefs.sync();
     } catch (BackingStoreException bse) {
-      System.out.println("ERROR saving Preferences!");
+      new com.github.sunnybat.commoncode.error.ErrorBuilder()
+          .setErrorMessage("Error Saving Preferences")
+          .setErrorMessage("An error has occurred while saving program Preferences. Some or all of your preferences may not be saved, or may even be corrupted.")
+          .setError(bse)
+          .buildWindow();
     }
   }
 

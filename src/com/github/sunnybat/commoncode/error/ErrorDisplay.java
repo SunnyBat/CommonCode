@@ -1,11 +1,11 @@
 package com.github.sunnybat.commoncode.error;
 
 /**
- * A handler to show Error Windows when an error occurs. This should be the only place
+ * A handler to show Error Windows when an error occurs. This should be the only place that program error windows are shown.
  *
  * @author SunnyBat
  */
-public class ErrorDisplay {
+class ErrorDisplay {
 
   private static boolean isFatalError;
   private static byte errorWindowCount = 0;
@@ -19,54 +19,25 @@ public class ErrorDisplay {
    * Displays a window clearly indicating something has gone wrong. This should be used only when the program encounters an error that impedes its
    * function, not for notifications to the user.
    *
-   * @param message The error message to display to the user
-   * @throws IllegalArgumentException If any String arguments are null
-   */
-  public static void showErrorWindow(String message) {
-    showErrorWindow("Error", "ERROR", message, null);
-  }
-
-  /**
-   * Displays a window clearly indicating something has gone wrong. This should be used only when the program encounters an error that impedes its
-   * function, not for notifications to the user.
-   *
-   * @param message The error message to display to the user
-   * @param t The error to display, or null if none
-   * @throws IllegalArgumentException If any String arguments are null
-   */
-  public static void showErrorWindow(String message, Throwable t) {
-    showErrorWindow("Error", "ERROR", message, t);
-  }
-
-  /**
-   * Displays a window clearly indicating something has gone wrong. This should be used only when the program encounters an error that impedes its
-   * function, not for notifications to the user.
-   *
-   * @param title The title of the error message
-   * @param message The error message to display to the user
-   * @param t The error to display, or null if none
-   * @throws IllegalArgumentException If any String arguments are null
-   */
-  public static void showErrorWindow(String title, String message, Throwable t) {
-    showErrorWindow("Error", title, message, t);
-  }
-
-  /**
-   * Displays a window clearly indicating something has gone wrong. This should be used only when the program encounters an error that impedes its
-   * function, not for notifications to the user.
-   *
    * @param windowTitle The title of the window (displayed on the taskbar)
    * @param title The title of the error message
    * @param message The error message to display to the user
    * @param t The error to display, or null if none
    * @throws IllegalArgumentException If any String arguments are null
    */
-  public static void showErrorWindow(String windowTitle, String title, String message, Throwable t) {
+  static void showErrorWindow(String windowTitle, String title, String message, String buttonText, Throwable t) {
     if (errorWindowCount >= MAX_ERROR_WINDOWS) {
       System.out.println("Stopped showing error windows -- too many!");
       return;
     }
-    ErrorWindow errorWindow = createErrorWindow(t, windowTitle, title, message);
+    if (windowTitle == null || title == null || message == null || buttonText == null) {
+      throw new IllegalArgumentException("Cannot supply null arguments (except t)");
+    }
+    ErrorWindow errorWindow = createErrorWindow(t);
+    errorWindow.setWindowTitle(windowTitle);
+    errorWindow.setErrorText(title);
+    errorWindow.setInformationText(message);
+    errorWindow.setExtraButtonText(buttonText);
     errorWindow.showWindow();
   }
 
@@ -87,7 +58,10 @@ public class ErrorDisplay {
       message.append(eE1);
       message.append("\n");
     }
-    ErrorWindow errorWindow = createErrorWindow(null, "Error Information", "StackTrace Information:", message.toString());
+    ErrorWindow errorWindow = createErrorWindow(null);
+    errorWindow.setWindowTitle("Error Information");
+    errorWindow.setErrorText("StackTrace Information");
+    errorWindow.setInformationText(message.toString());
     errorWindow.setLineWrap(false);
     errorWindow.setExtraButtonText("Copy to Clipboard");
     errorWindow.setExtraButtonEnabled(true);
@@ -103,14 +77,8 @@ public class ErrorDisplay {
    * @param message The error message to display
    * @return The Errorwindow Object with these parameters
    */
-  private static ErrorWindow createErrorWindow(Throwable t, String title, String error, String message) {
-    if (title == null || error == null || message == null) {
-      throw new IllegalArgumentException("String arguments cannot be null.");
-    }
+  private static ErrorWindow createErrorWindow(Throwable t) {
     ErrorWindow errorWindow = new ErrorWindow(t);
-    errorWindow.setWindowTitle(title);
-    errorWindow.setErrorText(error);
-    errorWindow.setInformationText(message);
     errorWindowCount++;
     return errorWindow;
   }

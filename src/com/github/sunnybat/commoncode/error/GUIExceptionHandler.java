@@ -21,9 +21,12 @@ public final class GUIExceptionHandler implements Thread.UncaughtExceptionHandle
 
   @Override
   public void uncaughtException(Thread aThread, Throwable aThrowable) {
-    ErrorDisplay.fatalError();
-    ErrorDisplay.showErrorWindow("ERROR", "Uncaught Exception", "An uncaught exception has occurred in the program. Once all Error windows are"
-        + " closed, the program will exit.\nUncaught exception in Thread: " + aThread.getName(), aThrowable);
+    new ErrorBuilder()
+        .setError(aThrowable)
+        .setErrorTitle("Fatal Program Error")
+        .setErrorMessage("An uncaught exception has occurred in the program. Once all Error windows are"
+            + " closed, the program will exit.\nUncaught exception in Thread: " + aThread.getName())
+        .buildWindow();
   }
 
 }
