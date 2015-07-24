@@ -1,20 +1,27 @@
 package com.github.sunnybat.commoncode.preferences;
 
 /**
+ * A Preference object. Preference objects save to the Preferences by default.
  *
  * @author Sunny
  */
 public class Preference {
 
-  protected Preference(String pref, PreferenceHandler handler) {
-    name = pref;
-    value = handler.loadPreferenceValue(pref);
-    shouldSave = handler.isInPrefs(pref);
-  }
-
   private final String name;
   private Object value;
   private boolean shouldSave;
+
+  /**
+   * Creates a new Preferences object.
+   *
+   * @param name The name of the Preference
+   * @param value The value of the Preference
+   */
+  protected Preference(String name, Object value) {
+    this.name = name;
+    this.value = value;
+    shouldSave = true;
+  }
 
   /**
    * Gets the name of this preference.
@@ -60,9 +67,6 @@ public class Preference {
    * @param val The value to set this Preference to
    */
   public void setValue(Object val) {
-    if (val == null) {
-      System.out.println("NOTE: Object val set to null!");
-    }
     value = val;
   }
 

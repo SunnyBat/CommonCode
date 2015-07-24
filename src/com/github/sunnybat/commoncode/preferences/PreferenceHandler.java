@@ -1,7 +1,7 @@
 package com.github.sunnybat.commoncode.preferences;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -14,8 +14,37 @@ public class PreferenceHandler {
   private final Preferences myPrefs;
   private final List<Preference> prefArray = new ArrayList<>();
 
+  /**
+   * Creates a new PreferenceHandler with the default root.
+   *
+   * @param programName The unique name of the program
+   */
   public PreferenceHandler(String programName) {
-    myPrefs = Preferences.userRoot().node("com/github/sunnybat/" + programName);
+    this("com/github/sunnybat/", programName.toLowerCase());
+  }
+
+  /**
+   * Creates a new PreferenceHandler with the given root and node
+   *
+   * @param root The root to use for the Preferences, should end with /
+   * @param node The unique name of the program, should not start with /
+   */
+  public PreferenceHandler(String root, String node) {
+    if (!root.endsWith("/")) {
+      root += "/";
+    }
+    if (node.startsWith("/")) {
+      node = node.substring(1);
+    }
+    myPrefs = Preferences.userRoot().node(root.toLowerCase() + node.toLowerCase());
+    try {
+      for (String pref : myPrefs.keys()) { // Add all Preferences in node to Preference list
+        Preference p = new Preference(pref, loadPreferenceValue(pref));
+        prefArray.add(p);
+      }
+    } catch (BackingStoreException bse) {
+      bse.printStackTrace();
+    }
   }
 
   protected synchronized Object loadPreferenceValue(Preference pref) {
@@ -24,7 +53,7 @@ public class PreferenceHandler {
 
   protected synchronized Object loadPreferenceValue(String prefName) {
     String value = myPrefs.get(prefName, null);
-    if (value == null) {
+    if (value == null || value.equals("null")) {
       return null;
     }
     if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
@@ -37,6 +66,31 @@ public class PreferenceHandler {
     }
   }
 
+  private synchronized Preference getPreferenceObjectIfExists(String prefName) {
+    for (Preference p : prefArray) {
+      if (p.getPrefName().equals(prefName)) {
+        return p;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Gets the given Preference object associated with the given TYPES object. If it does not exist, it is created. Preference objects will always be
+   * saved unless they are set to not save.
+   *
+   * @param prefName The TYPES object to load the Preference for
+   * @return The desired Preference object
+   */
+  public synchronized Preference getPreferenceObject(String prefName) {
+    Preference p = getPreferenceObjectIfExists(prefName);
+    if (p == null) {
+      p = new Preference(prefName, this);
+      prefArray.add(p);
+    }
+    return p;
+  }
+
   /**
    * Gets the boolean value of the given Preference. Note that this always returns false unless the Preference value is "True" (case insensitive).
    *
@@ -44,7 +98,10 @@ public class PreferenceHandler {
    * @return True if Preference value is "true", false otherwise
    */
   public synchronized boolean getBooleanPreference(String prefName) {
-    return Boolean.parseBoolean(String.valueOf(getPreferenceObject(prefName).getValue()));
+    if (!isInPrefs(prefName)) {
+      return false;
+    }
+    return Boolean.parseBoolean(String.valueOf(getPreferenceObjectIfExists(prefName).getValue()));
   }
 
   /**
@@ -54,8 +111,11 @@ public class PreferenceHandler {
    * @return The integer value, or -1 if preference is not an integer OR does not exist
    */
   public synchronized int getIntegerPreference(String prefName) {
+    if (!isInPrefs(prefName)) {
+      return -1;
+    }
     try {
-      return Integer.parseInt(String.valueOf(getPreferenceObject(prefName).getValue()));
+      return Integer.parseInt(String.valueOf(getPreferenceObjectIfExists(prefName).getValue()));
     } catch (NumberFormatException | NullPointerException e) {
       return -1;
     }
@@ -68,7 +128,10 @@ public class PreferenceHandler {
    * @return The Preference value, or null if it does not exist
    */
   public synchronized String getStringPreference(String prefName) {
-    String str = String.valueOf(getPreferenceObject(prefName).getValue());
+    if (!isInPrefs(prefName)) {
+      return null;
+    }
+    String str = String.valueOf(getPreferenceObjectIfExists(prefName).getValue());
     if (str.equalsIgnoreCase("null")) {
       str = null;
     }
@@ -81,36 +144,8 @@ public class PreferenceHandler {
    * @param prefName The Preference name to check for
    * @return True if found, false if not
    */
-  public synchronized boolean isInPrefs(String prefName) {
-    try {
-      String prefT = prefName;
-      String[] keys = myPrefs.keys();
-      for (String k : keys) {
-        if (k.equalsIgnoreCase(prefT)) {
-          return true;
-        }
-      }
-    } catch (BackingStoreException bse) {
-      bse.printStackTrace();
-    }
-    return false;
-  }
-
-  /**
-   * Gets the given Preference object associated with the given TYPES object.
-   *
-   * @param prefName The TYPES object to load the Preference for
-   * @return The desired Preference object
-   */
-  public synchronized Preference getPreferenceObject(String prefName) {
-    for (Preference p : prefArray) {
-      if (p.getPrefName().equals(prefName)) {
-        return p;
-      }
-    }
-    Preference p = new Preference(prefName, this);
-    prefArray.add(p);
-    return p;
+  private synchronized boolean isInPrefs(String prefName) {
+    return getPreferenceObjectIfExists(prefName) != null;
   }
 
   /**

@@ -26,6 +26,7 @@ public final class GUIExceptionHandler implements Thread.UncaughtExceptionHandle
         .setErrorTitle("Fatal Program Error")
         .setErrorMessage("An uncaught exception has occurred in the program. Once all Error windows are"
             + " closed, the program will exit.\nUncaught exception in Thread: " + aThread.getName())
+        .fatalError()
         .buildWindow();
   }
 

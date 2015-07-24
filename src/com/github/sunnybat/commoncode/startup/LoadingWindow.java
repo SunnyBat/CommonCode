@@ -1,5 +1,7 @@
 package com.github.sunnybat.commoncode.startup;
 
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * A loading window. Useful when doing lengthy tasks that the entire program depends on and doesn't have a Status GUI yet.
  *
@@ -15,13 +17,17 @@ public class LoadingWindow extends javax.swing.JFrame {
   }
 
   public LoadingWindow(final String title) {
-    javax.swing.SwingUtilities.invokeLater(new Runnable() {
-      @Override
-      public void run() {
-        initComponents();
-        customComponents(title);
-      }
-    });
+    try {
+      javax.swing.SwingUtilities.invokeAndWait(new Runnable() {
+        @Override
+        public void run() {
+          initComponents();
+          customComponents(title);
+        }
+      });
+    } catch (InterruptedException | InvocationTargetException e) {
+      e.printStackTrace();
+    }
   }
 
   private void customComponents(String title) {
