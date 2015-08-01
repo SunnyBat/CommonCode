@@ -98,8 +98,19 @@ public class PreferenceHandler {
    * @return True if Preference value is "true", false otherwise
    */
   public synchronized boolean getBooleanPreference(String prefName) {
+    return getBooleanPreference(prefName, false);
+  }
+
+  /**
+   * Gets the boolean value of the given Preference. Note that preference names are case insensitive.
+   *
+   * @param prefName The Preference to get the value of
+   * @param defaultValue The value to return if the preference does not exist
+   * @return True if Preference value is "true", false if not "true", or defaultValue if it does not exist
+   */
+  public synchronized boolean getBooleanPreference(String prefName, boolean defaultValue) {
     if (!isInPrefs(prefName)) {
-      return false;
+      return defaultValue;
     }
     return Boolean.parseBoolean(String.valueOf(getPreferenceObjectIfExists(prefName).getValue()));
   }
@@ -111,8 +122,19 @@ public class PreferenceHandler {
    * @return The integer value, or -1 if preference is not an integer OR does not exist
    */
   public synchronized int getIntegerPreference(String prefName) {
+    return getIntegerPreference(prefName, -1);
+  }
+
+  /**
+   * Gets the integer value for the given preference. Note that preference names are case insensitive.
+   *
+   * @param prefName The Preference to get the value of
+   * @param defaultValue The value to return if the preference does not exist
+   * @return The integer value, -1 if preference is not an integer, or defaultValue if it does not exist
+   */
+  public synchronized int getIntegerPreference(String prefName, int defaultValue) {
     if (!isInPrefs(prefName)) {
-      return -1;
+      return defaultValue;
     }
     try {
       return Integer.parseInt(String.valueOf(getPreferenceObjectIfExists(prefName).getValue()));

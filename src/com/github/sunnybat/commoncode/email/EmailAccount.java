@@ -37,6 +37,7 @@ public class EmailAccount {
    *
    * @param username The username to use
    * @param password The password to use
+   * @throws IllegalArgumentException If username or password is null or if username is an invalid email address
    */
   public EmailAccount(String username, String password) {
     this(username, password, 30);
@@ -205,8 +206,8 @@ public class EmailAccount {
             .setError(e)
             .setErrorTitle("Login Error")
             .setErrorMessage("Unable to log in. Double-check your username and password."
-            + "\nIf using Gmail, make sure you allow access to less secure apps:\nhttps://www.google.com/settings/security/lesssecureapps"
-            + "\nYou might also try unlocking a captcha:\nhttp://www.google.com/accounts/DisplayUnlockCaptcha")
+                + "\nIf using Gmail, make sure you allow access to less secure apps:\nhttps://www.google.com/settings/security/lesssecureapps"
+                + "\nYou might also try unlocking a captcha:\nhttp://www.google.com/accounts/DisplayUnlockCaptcha")
             .buildWindow();
       } else if (e instanceof MessagingException) {
         new ErrorBuilder()

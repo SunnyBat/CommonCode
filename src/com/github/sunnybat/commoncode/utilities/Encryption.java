@@ -1,4 +1,4 @@
-package com.github.sunnybat.commoncode.encryption;
+package com.github.sunnybat.commoncode.utilities;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
