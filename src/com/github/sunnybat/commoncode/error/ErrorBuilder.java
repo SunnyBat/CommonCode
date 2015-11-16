@@ -7,6 +7,12 @@ package com.github.sunnybat.commoncode.error;
  */
 public class ErrorBuilder {
 
+  static {
+    if (java.awt.GraphicsEnvironment.isHeadless()) {
+      forceCLine = true;
+    }
+  }
+
   private static boolean forceCLine;
 
   /**
@@ -29,9 +35,6 @@ public class ErrorBuilder {
    * Creates a new ErrorBuilder.
    */
   public ErrorBuilder() {
-//    if (java.awt.GraphicsEnvironment.isHeadless()) {
-//      throw new IllegalStateException("Program is in headless mode.");
-//    } // Should instead just display on command-line?
   }
 
   /**
@@ -86,7 +89,7 @@ public class ErrorBuilder {
    * @return The modified ErrorBuilder object
    * @throws UnsupportedOperationException Because this method is currently unimplemented
    */
-  public ErrorBuilder setButtonText(String text) { // Change to public later
+  public ErrorBuilder setButtonText(String text) {
     buttonText = text;
     return this;
   }

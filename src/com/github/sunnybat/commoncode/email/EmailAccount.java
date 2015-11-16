@@ -64,40 +64,38 @@ public class EmailAccount {
     if (username == null || username.length() < 7 || !username.contains("@") || username.startsWith("@") || password == null) {
       throw new IllegalArgumentException("Invalid username and/or password specified");
     }
+    EMAIL_DELAY = emailDelay;
+    props.put("mail.smtp.user", username);
+    props.put("mail.smtp.password", password);
+    props.put("mail.smtp.port", "587");
+    // Enable TLS, authentication
+    props.put("mail.smtp.starttls.enable", "true"); // Is this even doing anything?
+    props.put("mail.smtp.auth", "true");
     // Set host
     String emailEnding = username.substring(username.indexOf("@")).toLowerCase();
     if (emailEnding.contains("::")) { // Custom host -- email@site.com::site.smtp.server:port
       String ending = username.substring(username.indexOf("::") + 2);
       String host = ending;
-      String port = "465";
-      if (ending.contains(":")) {
+      String port = "587";
+      if (ending.contains(":")) { // Custom port
         host = ending.substring(0, ending.indexOf(":"));
         port = ending.substring(ending.indexOf(":") + 1);
       }
-      props.put("mail.smtps.host", host);
-      props.put("mail.smtps.port", port);
-      throw new UnsupportedOperationException("Program currently unable to use custom hosts.");
+      props.put("mail.smtp.host", host);
+      props.put("mail.smtp.port", port);
     } else if (emailEnding.contains("@gmail.com")) {
-      props.put("mail.smtps.host", "smtp.gmail.com");
+      props.put("mail.smtp.host", "smtp.gmail.com");
     } else if (emailEnding.contains("@yahoo.com")) {
-      props.put("mail.smtps.host", "smtp.mail.yahoo.com");
+      props.put("mail.smtp.host", "smtp.mail.yahoo.com");
     } else if (emailEnding.contains("@hotmail.com") || emailEnding.contains("@live.com")) {
-      props.put("mail.smtps.host", "smtp.live.com");
+      props.put("mail.smtp.host", "smtp.live.com");
     } else if (emailEnding.contains("@aol.com")) {
-      props.put("mail.smtps.host", "smtp.aol.com ");
+      props.put("mail.smtp.host", "smtp.aol.com ");
     } else if (emailEnding.contains("@comcast.net")) {
-      props.put("mail.smtps.host", "smtp.comcast.net ");
+      props.put("mail.smtp.host", "smtp.comcast.net ");
     } else {
-      throw new IllegalArgumentException("You must specify a custom host to use email servers other than Yahoo! or GMail.");
+      throw new IllegalArgumentException("You must specify a custom host to use email servers other than GMail, Yahoo, Hotmail, AOL, or Comcast.");
     }
-    // Setup the rest
-    EMAIL_DELAY = emailDelay;
-    props.put("mail.smtps.user", username);
-    props.put("mail.smtps.password", password);
-    // TLS -- not using anymore
-//    props.put("mail.smtps.starttls.enable", "true"); // Is this even doing anything?
-//    props.put("mail.smtps.auth", "true");
-//    props.put("mail.smtps.port", "587"); // TODO: Replace with custom port option later
   }
 
   /**
@@ -106,7 +104,16 @@ public class EmailAccount {
    * @return The username
    */
   public String getUsername() {
-    return props.getProperty("mail.smtps.user");
+    return props.getProperty("mail.smtp.user");
+  }
+
+  /**
+   * Gets the password for this EmailAccount.
+   *
+   * @return The password
+   */
+  private String getPassword() {
+    return props.getProperty("mail.smtp.password");
   }
 
   /**
@@ -119,11 +126,11 @@ public class EmailAccount {
    * <td>Value</td>
    * </tr>
    * <tr>
-   * <td>mail.smtps.starttls.enable</td>
+   * <td>mail.smtp.starttls.enable</td>
    * <td>true or false, default false</td>
    * </tr>
    * <tr>
-   * <td>mail.smtps.auth</td>
+   * <td>mail.smtp.auth</td>
    * <td>true or false, default false</td>
    * </tr>
    * <tr>
@@ -141,8 +148,8 @@ public class EmailAccount {
     //props.put(key, value);
     if (key == null || value == null) {
       throw new IllegalArgumentException("The key and value given must not be null");
-    } else if (!key.startsWith("javax.mail.") && !key.startsWith("mail.smtps.")) {
-      throw new IllegalArgumentException("You can only set Properties for javax.mail.* or mail.smtps.*");
+    } else if (!key.startsWith("javax.mail.") && !key.startsWith("mail.smtp.")) {
+      throw new IllegalArgumentException("You can only set Properties for javax.mail.* or mail.smtp.*");
     } else {
       props.setProperty(key, value);
     }
@@ -176,27 +183,20 @@ public class EmailAccount {
     }
     Session mySession = createNewSession();
     try {
-      //System.out.println("Initializing message...");
       MimeMessage message = new MimeMessage(mySession);
       message.setFrom(new InternetAddress(getUsername()));
       if (addressList.size() == 1) {
         message.addRecipient(Message.RecipientType.TO, new InternetAddress(addressList.get(0).getCompleteAddress()));
       } else {
         for (EmailAddress next : addressList) {
-          //System.out.println("Address: " + address.getCompleteAddress());
           message.addRecipient(Message.RecipientType.BCC, new InternetAddress(next.getCompleteAddress()));
         }
       }
       message.setSubject(subject);
       message.setText(msg);
-      //System.out.println("Message created. Getting Transport session.");
       Transport transport = mySession.getTransport("smtps");
-      //System.out.println("Transport created. Loggin in...");
-      System.out.println(props);
-      transport.connect();
-      //System.out.println("Logged in. Sending message...");
+      transport.connect(props.getProperty("mail.smtp.host"), getUsername(), getPassword());
       transport.sendMessage(message, message.getAllRecipients());
-      //System.out.println("Message Sent!");
       transport.close();
       timeLastSent = System.currentTimeMillis();
     } catch (Exception e) {
@@ -207,14 +207,16 @@ public class EmailAccount {
             .setErrorTitle("Login Error")
             .setErrorMessage("Unable to log in. Double-check your username and password."
                 + "\nIf using Gmail, make sure you allow access to less secure apps:\nhttps://www.google.com/settings/security/lesssecureapps"
-                + "\nYou might also try unlocking a captcha:\nhttp://www.google.com/accounts/DisplayUnlockCaptcha")
+                + "\nYou might also try unlocking a captcha:\nhttps://www.google.com/accounts/DisplayUnlockCaptcha")
             .buildWindow();
+        return false;
       } else if (e instanceof MessagingException) {
         new ErrorBuilder()
             .setError(e)
             .setErrorTitle("Connection Error")
             .setErrorMessage("Unable to connect to email server.")
             .buildWindow();
+        return false;
         //} else if (mex.getLocalizedMessage().contains("javax.mail.AuthenticationFailedException:")) {
       } else if (e instanceof javax.net.ssl.SSLHandshakeException) {
         new ErrorBuilder()
@@ -222,6 +224,7 @@ public class EmailAccount {
             .setErrorTitle("SSL Certificate Error")
             .setErrorMessage("The PAXChecker was unable to connect to the mail server due to an invalid SSL certificate.")
             .buildWindow();
+        return false;
       } else {
         new ErrorBuilder()
             .setError(e)

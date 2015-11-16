@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author Sunny
  */
-public class LoadingWindow extends javax.swing.JFrame {
+public class LoadingWindow extends com.github.sunnybat.commoncode.javax.swing.JFrame implements Startup {
 
   /**
    * Creates new form Startup
@@ -45,14 +45,22 @@ public class LoadingWindow extends javax.swing.JFrame {
     }
   }
 
-  /**
-   * Makes the window visible.
-   */
-  public void showWindow() {
+  @Override
+  public void start() {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
       public void run() {
         setVisible(true);
+      }
+    });
+  }
+
+  @Override
+  public void stop() {
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+      @Override
+      public void run() {
+        setVisible(false);
       }
     });
   }
@@ -62,6 +70,7 @@ public class LoadingWindow extends javax.swing.JFrame {
    *
    * @param text The text to set
    */
+  @Override
   public void setStatus(final String text) {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       @Override
