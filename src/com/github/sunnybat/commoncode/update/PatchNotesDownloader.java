@@ -15,11 +15,16 @@ public class PatchNotesDownloader {
 
   private String versionNotes;
   private int updateLevel = -2;
+  private int minimumUpdateLevel = 2;
   private final String PATCH_NOTES_LINK; // No need to give user this link, I don't think...
   /**
    * {@link #getUpdateLevel()} returns this if the Patch Notes have not been downloaded yet.
    */
-  public static final int UPDATE_NOT_RUN = -2;
+  public static final int UPDATE_NOT_RUN = -3;
+  /**
+   * {@link #getUpdateLevel()} returns this if the version supplied in {@link #downloadVersionNotes(java.lang.String)} was not found.
+   */
+  public static final int UPDATE_NOT_FOUND = -2;
   /**
    * {@link #getUpdateLevel()} returns this if the program was unable to download the Patch Notes, but an attempt to was made.
    */
@@ -40,10 +45,6 @@ public class PatchNotesDownloader {
    * {@link #getUpdateLevel()} returns this if a major update is available.
    */
   public static final int UPDATE_MAJOR = 3;
-  /**
-   * {@link #getUpdateLevel()} returns this if the version supplied in {@link #downloadVersionNotes(java.lang.String)} was not found.
-   */
-  public static final int UPDATE_NOT_FOUND = 4;
 
   /**
    * Creates a new PatchNotes instance with the given path to the Patch Notes file.
@@ -170,15 +171,16 @@ public class PatchNotesDownloader {
 
   /**
    * Gets the current level of update available.<br>
-   * 0 = Unknown update level<br>
-   * 1 = BETA version<br>
-   * 2 = Minor version<br>
-   * 3 = Major version
+   * See static final UPDATE variables within this class for more information.
    *
-   * @return 0-3 depending on the update level available
+   * @return The current update level
    */
   public int getUpdateLevel() {
     return updateLevel;
+  }
+
+  public void enableBetaDownload() {
+    minimumUpdateLevel = UPDATE_BETA;
   }
 
   /**
@@ -188,10 +190,10 @@ public class PatchNotesDownloader {
    * @throws IllegalStateException if Patch Notes have not been loaded yet
    */
   public boolean updateAvailable() {
-    if (getUpdateLevel() == UPDATE_NOT_RUN) {
+    if (updateLevel == UPDATE_NOT_RUN) {
       throw new IllegalStateException("Patch Notes have not been loaded!");
     }
-    return !(getUpdateLevel() <= UPDATE_NONE || getUpdateLevel() >= UPDATE_NOT_FOUND);
+    return updateLevel >= minimumUpdateLevel;
   }
 
   /**

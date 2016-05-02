@@ -7,6 +7,7 @@ import java.util.Properties;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -74,6 +75,7 @@ public class EmailAccount {
     // Set host
     String emailEnding = username.substring(username.indexOf("@")).toLowerCase();
     if (emailEnding.contains("::")) { // Custom host -- email@site.com::site.smtp.server:port
+      String email = username.substring(0, username.indexOf("::"));
       String ending = username.substring(username.indexOf("::") + 2);
       String host = ending;
       String port = "587";
@@ -81,12 +83,14 @@ public class EmailAccount {
         host = ending.substring(0, ending.indexOf(":"));
         port = ending.substring(ending.indexOf(":") + 1);
       }
+      props.put("mail.smtp.user", email);
       props.put("mail.smtp.host", host);
       props.put("mail.smtp.port", port);
     } else if (emailEnding.contains("@gmail.com")) {
       props.put("mail.smtp.host", "smtp.gmail.com");
     } else if (emailEnding.contains("@yahoo.com")) {
       props.put("mail.smtp.host", "smtp.mail.yahoo.com");
+      props.put("mail.smtp.port", "465");
     } else if (emailEnding.contains("@hotmail.com") || emailEnding.contains("@live.com")) {
       props.put("mail.smtp.host", "smtp.live.com");
     } else if (emailEnding.contains("@aol.com")) {
@@ -148,7 +152,7 @@ public class EmailAccount {
     //props.put(key, value);
     if (key == null || value == null) {
       throw new IllegalArgumentException("The key and value given must not be null");
-    } else if (!key.startsWith("javax.mail.") && !key.startsWith("mail.smtp.")) {
+    } else if (!key.startsWith("javax.mail.") && !key.startsWith("mail.smtp.") && !key.equals("mail.debug")) {
       throw new IllegalArgumentException("You can only set Properties for javax.mail.* or mail.smtp.*");
     } else {
       props.setProperty(key, value);
@@ -161,7 +165,12 @@ public class EmailAccount {
    * @return The JavaMail Session with the currently set properties
    */
   private Session createNewSession() {
-    return Session.getInstance(props);
+    return Session.getInstance(props, new javax.mail.Authenticator() {
+      @Override
+      protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(getUsername(), getPassword());
+      }
+    });
   }
 
   /**
@@ -194,10 +203,7 @@ public class EmailAccount {
       }
       message.setSubject(subject);
       message.setText(msg);
-      Transport transport = mySession.getTransport("smtps");
-      transport.connect(props.getProperty("mail.smtp.host"), getUsername(), getPassword());
-      transport.sendMessage(message, message.getAllRecipients());
-      transport.close();
+      Transport.send(message);
       timeLastSent = System.currentTimeMillis();
     } catch (Exception e) {
       e.printStackTrace();
