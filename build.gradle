@@ -1,0 +1,17 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'com.github.sunnybat'
+archivesBaseName = 'commoncode'
+version = '1.0'
+
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'com.sun.mail:javax.mail:1.5.5'
+	compile 'org.twitter4j:twitter4j:4.+'
+}
+
