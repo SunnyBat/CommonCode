@@ -1,4 +1,4 @@
-package com.github.sunnybat.commoncode.email;
+package com.github.sunnybat.commoncode.email.smtp;
 
 import com.github.sunnybat.commoncode.error.ErrorBuilder;
 import java.util.ArrayList;

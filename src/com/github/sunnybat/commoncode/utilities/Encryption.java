@@ -20,6 +20,18 @@ import sun.misc.BASE64Encoder;
  */
 public class Encryption {
 
+  private static Encryption defaultEncryption;
+  private static final byte[] DEFAULT_SALT = {
+    (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
+    (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,};
+
+  public static Encryption getDefaultEncryption() {
+    if (defaultEncryption == null) {
+      defaultEncryption = new Encryption(DEFAULT_SALT);
+    }
+    return defaultEncryption;
+  }
+
   private static final byte[] SALT = {
     (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
     (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,};
@@ -76,6 +88,10 @@ public class Encryption {
   private static byte[] base64Decode(String property) throws IOException {
     // NB: This class is internal, and you probably should use another impl
     return decoder.decodeBuffer(property); // Need to replace with a different encoder
+  }
+
+  public Encryption(byte[] salt) {
+
   }
 
 }

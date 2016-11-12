@@ -1,4 +1,4 @@
-package com.github.sunnybat.commoncode.email;
+package com.github.sunnybat.commoncode.email.smtp;
 
 /**
  * Stores information about a given email address.

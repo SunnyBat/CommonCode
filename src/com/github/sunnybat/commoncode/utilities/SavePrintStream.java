@@ -61,9 +61,7 @@ public class SavePrintStream extends java.io.PrintStream {
 
   @Override
   public void println(String x) {
-    synchronized (LOCK) {
-      newLine = true;
-    }
+    markNewLine();
     super.println(x);
   }
 

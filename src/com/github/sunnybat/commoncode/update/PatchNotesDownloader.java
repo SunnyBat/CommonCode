@@ -15,7 +15,7 @@ public class PatchNotesDownloader {
 
   private String versionNotes;
   private int updateLevel = -2;
-  private int minimumUpdateLevel = 2;
+  private int minimumUpdateLevel = UPDATE_MINOR;
   private final String PATCH_NOTES_LINK; // No need to give user this link, I don't think...
   /**
    * {@link #getUpdateLevel()} returns this if the Patch Notes have not been downloaded yet.
