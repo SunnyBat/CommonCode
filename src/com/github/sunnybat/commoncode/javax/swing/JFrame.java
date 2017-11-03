@@ -138,7 +138,9 @@ public abstract class JFrame extends javax.swing.JFrame {
    */
   @Override
   public void dispose() {
-    tray.remove(myIcon);
+    if (tray != null) {
+      tray.remove(myIcon);
+    }
     super.dispose();
   }
 }
