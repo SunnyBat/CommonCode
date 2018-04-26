@@ -2,6 +2,7 @@ package com.github.sunnybat.commoncode.utilities;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -9,8 +10,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 /**
  * Credit goes to Johannes Brodwall on StackOverflow for providing this class. It has been modified quite a bit, but the basic encryption/decryption
@@ -35,8 +34,8 @@ public class Encryption {
   private static final byte[] SALT = {
     (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
     (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,};
-  private static final BASE64Encoder encoder = new BASE64Encoder();
-  private static final BASE64Decoder decoder = new BASE64Decoder();
+  private static final Base64.Encoder encoder = Base64.getEncoder();
+  private static final Base64.Decoder decoder = Base64.getDecoder();
 
   /**
    * Encrypts the given String. Should be used in conjunction with {@link #decrypt(java.lang.String)}.
@@ -60,8 +59,7 @@ public class Encryption {
   }
 
   private static String base64Encode(byte[] bytes) {
-    // NB: This class is internal, and you probably should use another impl
-    return encoder.encode(bytes); // Need to replace with a different encoder
+    return encoder.encodeToString(bytes);
   }
 
   /**
@@ -86,8 +84,7 @@ public class Encryption {
   }
 
   private static byte[] base64Decode(String property) throws IOException {
-    // NB: This class is internal, and you probably should use another impl
-    return decoder.decodeBuffer(property); // Need to replace with a different encoder
+    return decoder.decode(property);
   }
 
   public Encryption(byte[] salt) {
