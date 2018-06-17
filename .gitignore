@@ -14,5 +14,6 @@ dist/
 
 # Ignore Netbeans-specific classes #
 build/
-nbproject/private/
+nbproject/
 lib/
+.*/
