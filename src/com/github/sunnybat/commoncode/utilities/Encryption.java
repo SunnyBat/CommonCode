@@ -10,6 +10,8 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
+import sun.misc.BASE64Encoder;
+import sun.misc.BASE64Decoder;
 
 /**
  * Credit goes to Johannes Brodwall on StackOverflow for providing this class. It has been modified quite a bit, but the basic encryption/decryption
@@ -18,6 +20,53 @@ import javax.crypto.spec.PBEParameterSpec;
  * @author Johannes Brodwall
  */
 public class Encryption {
+
+    private static class Base64Util {
+        private Base64.Encoder javaEncoder;
+        private Base64.Decoder javaDecoder;
+        private BASE64Encoder sunEncoder;
+        private BASE64Decoder sunDecoder;
+
+        public Base64Util() {
+            try {
+                javaEncoder = Base64.getEncoder();
+                javaDecoder = Base64.getDecoder();
+            } catch (NoClassDefFoundError cnfe) {
+            }
+            try {
+                sunEncoder = new BASE64Encoder();
+                sunDecoder = new BASE64Decoder();
+            } catch (NoClassDefFoundError cnfe) {
+            }
+        }
+
+        public String base64Encode(byte[] bytes) {
+            if (javaEncoder != null) {
+                return javaEncoder.encodeToString(bytes);
+            }
+            else if (sunEncoder != null) {
+                return sunEncoder.encode(bytes);
+            }
+            else {
+                return null;
+            }
+        }
+        
+        public byte[] base64Decode(String str) {
+            if (javaDecoder != null) {
+                return javaDecoder.decode(str);
+            } else if (sunDecoder != null) {
+                try {
+                    return sunDecoder.decodeBuffer(str);
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+    }
 
   private static Encryption defaultEncryption;
   private static final byte[] DEFAULT_SALT = {
@@ -34,8 +83,7 @@ public class Encryption {
   private static final byte[] SALT = {
     (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,
     (byte) 0xde, (byte) 0x33, (byte) 0x10, (byte) 0x12,};
-  private static final Base64.Encoder encoder = Base64.getEncoder();
-  private static final Base64.Decoder decoder = Base64.getDecoder();
+  private static final Base64Util utils = new Base64Util();
 
   /**
    * Encrypts the given String. Should be used in conjunction with {@link #decrypt(java.lang.String)}.
@@ -59,7 +107,7 @@ public class Encryption {
   }
 
   private static String base64Encode(byte[] bytes) {
-    return encoder.encodeToString(bytes);
+    return utils.base64Encode(bytes);
   }
 
   /**
@@ -84,7 +132,7 @@ public class Encryption {
   }
 
   private static byte[] base64Decode(String property) throws IOException {
-    return decoder.decode(property);
+    return utils.base64Decode(property);
   }
 
   public Encryption(byte[] salt) {
