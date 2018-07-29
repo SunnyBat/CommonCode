@@ -17,3 +17,6 @@ build/
 nbproject/
 lib/
 .*/
+
+# Gradle #
+gradle.properties
