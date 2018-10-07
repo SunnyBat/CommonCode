@@ -62,7 +62,7 @@ public class Preference {
   }
 
   /**
-   * Sets the value for this Preference. Note that this value will be saved until {@link PreferenceHandler#savePreferences()} is called.
+   * Sets the value for this Preference. Note that this value will not be saved until {@link PreferenceHandler#savePreferences()} is called.
    *
    * @param val The value to set this Preference to
    */

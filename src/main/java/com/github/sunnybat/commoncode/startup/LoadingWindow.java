@@ -33,7 +33,7 @@ public class LoadingWindow extends com.github.sunnybat.commoncode.javax.swing.JF
   private void customComponents(String title) {
     setLocationRelativeTo(null);
     try {
-      javax.swing.JLabel picLabel = new javax.swing.JLabel(new javax.swing.ImageIcon(getClass().getResource("/com/github/sunnybat/commoncode/startup/Loading.gif")));
+      javax.swing.JLabel picLabel = new javax.swing.JLabel(new javax.swing.ImageIcon(getClass().getResource("/com/github/sunnybat/commoncode/resources/images/Loading.gif")));
       JPPicture.add(picLabel);
       pack();
     } catch (Exception iOException) {
