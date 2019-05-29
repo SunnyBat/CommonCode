@@ -10,9 +10,6 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
 
-import sun.misc.BASE64Encoder;
-import sun.misc.BASE64Decoder;
-
 /**
  * Credit goes to Johannes Brodwall on StackOverflow for providing this class. It has been modified quite a bit, but the basic encryption/decryption
  * code remains the same.
@@ -24,8 +21,6 @@ public class Encryption {
     private static class Base64Util {
         private Base64.Encoder javaEncoder;
         private Base64.Decoder javaDecoder;
-        private BASE64Encoder sunEncoder;
-        private BASE64Decoder sunDecoder;
 
         public Base64Util() {
             try {
@@ -33,19 +28,11 @@ public class Encryption {
                 javaDecoder = Base64.getDecoder();
             } catch (NoClassDefFoundError cnfe) {
             }
-            try {
-                sunEncoder = new BASE64Encoder();
-                sunDecoder = new BASE64Decoder();
-            } catch (NoClassDefFoundError cnfe) {
-            }
         }
 
         public String base64Encode(byte[] bytes) {
             if (javaEncoder != null) {
                 return javaEncoder.encodeToString(bytes);
-            }
-            else if (sunEncoder != null) {
-                return sunEncoder.encode(bytes);
             }
             else {
                 return null;
@@ -55,13 +42,6 @@ public class Encryption {
         public byte[] base64Decode(String str) {
             if (javaDecoder != null) {
                 return javaDecoder.decode(str);
-            } else if (sunDecoder != null) {
-                try {
-                    return sunDecoder.decodeBuffer(str);
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                    return null;
-                }
             } else {
                 return null;
             }
